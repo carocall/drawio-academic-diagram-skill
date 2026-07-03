@@ -28,7 +28,7 @@ D:\Software\Drawio\drawio.exe --export --format png --output my_diagram.png my_d
 ## 支持的图表类型(当判断需要画下面这些图，必须读取详细的md文件指导，根据指导来画图)
 ### **ER图（实体关系图）** 
 - 注意，你有两种方式
-- 第一种是直接使用inner-skills\er-generator\这个文件下的skill来程序化生成符合drawio的er图的xml（推荐）
+- 第一种是直接使用inner-skills\er-generator\这个文件下的skill来程序化生成符合drawio的er图的xml（要详细阅读inner-skills\er-generator\document.md来确保掌握工具）（推荐）
 - 第二种是参考references\style\ER图提示词.md来手动构建xml（不建议，只有用户点明要这样的时候才采取该方法）
 ### **流程图** 
 - 参考references\style\流程图提示词.md的详细指导
@@ -36,7 +36,7 @@ D:\Software\Drawio\drawio.exe --export --format png --output my_diagram.png my_d
 - references\style\用例图提示词.md
 ### **功能模块图** 
 - 注意，你有两种方式
-- 第一种是直接使用inner-skills\json-to-drawio-functional-module\这个文件下的skill来程序化生成符合drawio的功能模块图的xml（推荐）
+- 第一种是直接使用inner-skills\json-to-drawio-functional-module\这个文件下的skill来程序化生成符合drawio的功能模块图的xml（要详细阅读inner-skills\json-to-drawio-functional-module\document.md来确保掌握工具）（推荐）
 - 第二种是参考references\style\功能模块图.md来手动构建xml（不建议，只有用户点明要这样的时候才采取该方法）
 ---
 ## 核心规则（必须严格遵守）
