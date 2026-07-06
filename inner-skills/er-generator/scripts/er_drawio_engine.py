@@ -480,7 +480,7 @@ class ForceLayoutEngine:
                 dx, dy = ecx - attr.x, ecy - attr.y
                 dist = math.sqrt(dx * dx + dy * dy) + 0.1
                 ideal_dist = cfg.attr_ellipse_rx * 3 + 30
-                force = 0.12 * (dist - ideal_dist)
+                force = 0.20 * (dist - ideal_dist)
                 fx += force * dx / dist
                 fy += force * dy / dist
                 for entity in self.entities.values():
