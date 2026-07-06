@@ -65,11 +65,11 @@ class Relationship:
 @dataclass
 class LayoutConfig:
     # Force parameters
-    repulsion_strength: float = 10000
-    attraction_strength: float = 0.035
+    repulsion_strength: float = 3000
+    attraction_strength: float = 0.08
     ideal_edge_length: float = 250
-    damping: float = 0.80
-    max_iterations: int = 300
+    damping: float = 0.85
+    max_iterations: int = 500
     cooling_factor: float = 0.98
     min_temperature: float = 0.01
 
@@ -83,8 +83,8 @@ class LayoutConfig:
     attr_spacing: int = 30
 
     # Canvas
-    margin: int = 100
-    padding: int = 80
+    margin: int = 80
+    padding: int = 50
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -279,43 +279,17 @@ class ForceLayoutEngine:
         cfg = self.config
         ew, eh = cfg.entity_width, cfg.entity_height
         spacing = cfg.ideal_edge_length
-        adjacency = {eid: set() for eid in self.entities}
-        for rel in self.relationships.values():
-            if rel.from_entity in adjacency and rel.to_entity in adjacency:
-                adjacency[rel.from_entity].add(rel.to_entity)
-                adjacency[rel.to_entity].add(rel.from_entity)
         all_eids = list(self.entities.keys())
-        community = self._louvain_clustering(adjacency, all_eids)
-        communities = {}
-        for eid, cid in community.items():
-            communities.setdefault(cid, []).append(eid)
-        subgraph_layouts = {}
-        for cid, members in communities.items():
-            subgraph_layouts[cid] = self._layout_subgraph_radial(members, adjacency, spacing)
-        comm_ids = sorted(communities.keys())
-        comm_adj = {cid: set() for cid in comm_ids}
-        for rel in self.relationships.values():
-            c_from = community.get(rel.from_entity)
-            c_to = community.get(rel.to_entity)
-            if c_from is not None and c_to is not None and c_from != c_to:
-                comm_adj[c_from].add(c_to)
-                comm_adj[c_to].add(c_from)
-        comm_spacing = spacing * 2.5
-        comm_layout = self._layout_subgraph_radial(
-            [str(cid) for cid in comm_ids],
-            {str(cid): {str(n) for n in comm_adj[cid]} for cid in comm_ids},
-            comm_spacing,
-        )
-        origin_x = cfg.margin + ew + comm_spacing
-        origin_y = cfg.margin + eh + comm_spacing
-        for cid, members in communities.items():
-            comm_cx, comm_cy = comm_layout.get(str(cid), (0.0, 0.0))
-            global_cx = origin_x + comm_cx
-            global_cy = origin_y + comm_cy
-            for eid in members:
-                lx, ly = subgraph_layouts[cid][eid]
-                self.entities[eid].x = global_cx + lx - ew / 2
-                self.entities[eid].y = global_cy + ly - eh / 2
+        n = len(all_eids)
+        cols = max(3, int(math.ceil(math.sqrt(n))))
+        rows = (n + cols - 1) // cols
+        start_x = cfg.margin + ew
+        start_y = cfg.margin + eh
+        for i, eid in enumerate(all_eids):
+            col = i % cols
+            row = i // cols
+            self.entities[eid].x = start_x + col * (ew + spacing)
+            self.entities[eid].y = start_y + row * (eh + spacing)
 
     def _run_force_simulation(self) -> None:
         cfg = self.config
@@ -458,11 +432,11 @@ class ForceLayoutEngine:
             if not entity.attributes:
                 continue
             ecx, ecy = entity.x + entity.width / 2, entity.y + entity.height / 2
-            ideal_dist = cfg.attr_ellipse_rx + 30
+            ideal_dist = cfg.attr_ellipse_rx * 3 + 30
             for attr in entity.attributes:
                 best_angles = []
-                for i in range(16):
-                    angle = 2 * math.pi * i / 16
+                for i in range(32):
+                    angle = 2 * math.pi * i / 32 + random.uniform(-0.05, 0.05)
                     ax = ecx + ideal_dist * math.cos(angle)
                     ay = ecy + ideal_dist * math.sin(angle)
                     crowdedness = 0.0
@@ -505,16 +479,16 @@ class ForceLayoutEngine:
                 ecx, ecy = parent_entity.x + parent_entity.width / 2, parent_entity.y + parent_entity.height / 2
                 dx, dy = ecx - attr.x, ecy - attr.y
                 dist = math.sqrt(dx * dx + dy * dy) + 0.1
-                ideal_dist = cfg.attr_ellipse_rx + 30
-                force = 0.15 * (dist - ideal_dist)
+                ideal_dist = cfg.attr_ellipse_rx * 3 + 30
+                force = 0.12 * (dist - ideal_dist)
                 fx += force * dx / dist
                 fy += force * dy / dist
                 for entity in self.entities.values():
                     ent_cx, ent_cy = entity.x + entity.width / 2, entity.y + entity.height / 2
                     dx, dy = attr.x - ent_cx, attr.y - ent_cy
                     dist = math.sqrt(dx * dx + dy * dy) + 0.1
-                    min_dist = entity.width / 2 + cfg.attr_ellipse_rx + 30
-                    force = 200000.0 / (dist * dist) if dist < min_dist else 15000.0 / (dist * dist)
+                    min_dist = entity.width / 2 + cfg.attr_ellipse_rx + 20
+                    force = 50000.0 / (dist * dist) if dist < min_dist else 5000.0 / (dist * dist)
                     fx += force * dx / dist
                     fy += force * dy / dist
                 for rel in self.relationships.values():
