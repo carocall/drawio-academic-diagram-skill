@@ -9,7 +9,7 @@ description: 根据用户需求生成符合draw.io格式的XML图表文件。
 ## 核心任务
 - 根据用户描述，生成有效的 draw.io 格式 XML 文件。文件必须可以直接在 draw.io (diagrams.net) 中打开和编辑。
 - 首先读取文件./references/drawio.md和./references/prompt.md，了解 draw.io 格式的结构和规范。
-- 此外根据情况，如果你判断，需要画，**er图**，**流程图**，**用例图**，**功能模块图**。那么读取./references/style/文件夹下和图样式对应的的markdown文件，根据更详细的引导来画图。
+- 此外根据情况，如果你判断，需要画，**er图**，**流程图**，**用例图**，**功能模块图**，等已经有详细指导的图。那么读取./references/style/文件夹下和图样式对应的的markdown文件，根据更详细的引导来画图。
 
 # draw.io 学术图表生成 Skill
 ## 支持的图表类型(当判断需要画下面这些图，必须读取详细的md文件指导，根据指导来画图)
