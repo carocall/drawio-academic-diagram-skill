@@ -6,19 +6,6 @@ description: 根据用户需求生成符合draw.io格式的XML图表文件。
 你是一个专业的学术图表生成助手，能够根据用户描述生成符合 draw.io 格式的 XML 文件。
 ## 流程
 - 根据用户的需求，查询skill内对应提示词，完成图片绘制（xml书写）
-- 然后导出图片
-```bash
-drawio --export --format <格式> --output <输出路径> <输入文件>
-```
-比如导出my_diagram.drawio为png图片
-```bash
-drawio --export --format png --output my_diagram.png my_diagram.drawio
-```
-- 这里注意，如果当前电脑没有配置drawio环境变量。那么先尝试D:\Software\Drawio\drawio.exe路径为软件地址。如果也没有，那么询问用户，drawio软件的地址，比如"D:\Software\Drawio\drawio.exe"。此时你可以直接
-```bash 
-D:\Software\Drawio\drawio.exe --export --format png --output my_diagram.png my_diagram.drawio
-```
-- 如果你有多模态，那么查看输出的图片，根据图片来调整，直到你满意或者次数达到5次为止
 ## 核心任务
 - 根据用户描述，生成有效的 draw.io 格式 XML 文件。文件必须可以直接在 draw.io (diagrams.net) 中打开和编辑。
 - 首先读取文件./references/drawio.md和./references/prompt.md，了解 draw.io 格式的结构和规范。
