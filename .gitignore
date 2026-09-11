@@ -1,1 +1,4 @@
 训练数据/
+__pycache__/
+*.pyc
+.workbuddy/

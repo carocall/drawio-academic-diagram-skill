@@ -1,87 +1,47 @@
 ---
 name: drawio-diagram
-description: 根据用户需求生成符合draw.io格式的XML图表文件。
+description: 根据用户需求生成符合draw.io格式的XML图表文件。支持流程图、用例图、泳道图、技术路线图、ER图、功能模块图等类型，提供手写提示词与JSON-to-drawio程序化引擎。
 ---
-# 你的定位与任务
-你是一个专业的学术图表生成助手，能够根据用户描述生成符合 draw.io 格式的 XML 文件。
-## 流程
-- 根据用户的需求，查询skill内对应提示词，完成图片绘制（xml书写）
-## 核心任务
-- 根据用户描述，生成有效的 draw.io 格式 XML 文件。文件必须可以直接在 draw.io (diagrams.net) 中打开和编辑。
-- 首先读取文件./references/drawio.md和./references/prompt.md，了解 draw.io 格式的结构和规范。
-- 此外根据情况，如果你判断，需要画，**er图**，**流程图**，**用例图**，**功能模块图**，**泳道图**，**技术路线图**，等已经有详细指导的图。那么读取./references/style/文件夹下和图样式对应的的markdown文件，根据更详细的引导来画图。
 
-# draw.io 学术图表生成 Skill
-## 支持的图表类型(当判断需要画下面这些图，必须读取详细的md文件指导，根据指导来画图)
-### **ER图（实体关系图）** 
-- 注意，你有两种方式
-- 第一种是直接使用inner-skills\er-generator\这个文件下的skill来程序化生成符合drawio的er图的xml（推荐）
-- 第二种是参考references\style\ER图提示词.md来手动构建xml（不建议，只有用户点明要这样的时候才采取该方法）
-### **流程图** 
-- 参考references\style\流程图提示词.md的详细指导
-### **用例图** 
-- references\style\用例图提示词.md
-### **功能模块图** 
-- 注意，你有两种方式
-- 第一种是直接使用inner-skills\json-to-drawio-functional-module\这个文件下的skill来程序化生成符合drawio的功能模块图的xml（推荐）
-- 第二种是参考references\style\功能模块图.md来手动构建xml（不建议，只有用户点明要这样的时候才采取该方法）
-### **泳道图（跨职能流程图）** 
-- 参考references\style\泳道图.md的详细指导
-- 适用于"多角色/多部门 + 多阶段"的审批流、管理流程、业务流程
-- 列 = 角色/部门，行 = 阶段/环节，节点颜色表达语义类型（申请/审批/备案/判断/驳回等）
-### **技术路线图** 
-- 参考references\style\技术路线图.md的详细指导
-- 适用于开题报告、项目申请书、论文中的"技术路线"章节
-- 自上而下分段：左列研究步骤 + 中间阶段主体（外框+标题条+内容卡+汇总条）+ 右列研究方法，阶段之间用 flexArrow 串联
----
-## 核心规则（必须严格遵守）
-### 1. 文件结构
-```xml
-<mxfile>
-  <diagram id="page-1" name="Page-1">
-    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1"
-                  tooltips="1" connect="1" arrows="1" fold="1"
-                  page="1" pageScale="1" pageWidth="850" pageHeight="1100"
-                  math="0" shadow="0">
-      <root>
-        <!-- 必须的结构元素 -->
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <!-- 图表元素放在这里，parent="1" -->
-      </root>
-    </mxGraphModel>
-  </diagram>
-</mxfile>
-```
-### 2. 关键约束
-- **必须**包含 `<mxCell id="0" />` 和 `<mxCell id="1" parent="0" />`
-- **所有**图表元素的 `parent` 属性必须设为 `"1"` 或其他有效单元格 ID
-- **ID 必须唯一**，可以是任何字符串（如 "2", "node-1", "abc123"）
-- **顶点**需要 `vertex="1"`，**边**需要 `edge="1"`，二者互斥
-- **不要**使用压缩 XML（不要设置 `compressed="true"`）
-- **坐标系统**：原点 (0,0) 在左上角，x 向右增加，y 向下增加
----
-## 样式格式
+# drawio-diagram Skill
 
-## 验证清单
-生成后请检查：
-- [ ] XML 格式正确，标签闭合
-- [ ] 包含 id="0" 和 id="1" 的结构元素
-- [ ] 所有 ID 唯一
-- [ ] 所有元素的 parent 属性有效
-- [ ] 顶点有 vertex="1"，边有 edge="1"
-- [ ] 边的 source 和 target 引用存在的顶点 ID
-- [ ] 顶点有 x, y, width, height 的 mxGeometry
-- [ ] 边有 relative="1" 的 mxGeometry
-- [ ] 非矩形形状设置了对应的 perimeter
-- [ ] HTML 内容已正确转义
-- [ ] 样式字符串格式正确（分号分隔）
-- [ ] 元素之间不重叠
-- [ ] 关系线不交叉
----
+生成符合 draw.io (diagrams.net) 格式的 XML 图表文件，可直接保存为 `.drawio` 打开编辑。
+
+## 通用层（任何图都先读）
+
+1. `drawio.md` —— draw.io XML 格式规范（文件结构、样式字符串、形状库、边/箭头、组与容器、HTML 标签、完整示例）。**生成前先通读**，确保输出格式正确。
+2. `prompt.md` —— 通用生成指令（任务说明、输出要求、语言要求）。**生成前先读**，明确"只输出 XML"等约束。
+
+## 路由：判断图类型 → 进 styles/ 目录检索
+
+根据用户描述判断图类型，进入 `styles/<type>/` 目录：
+
+1. 先读 `guide.md` —— 它只说明本目录**有什么文件、怎么用**（轻量索引，不必通读样式）。
+2. 按 `guide.md` 指引取样式：手写类读 `style.md`；引擎类读 `engine.md` 并用 `*_engine.py` 程序化生成（**优先用引擎**，除非用户明确要求手写）。
+
+| 图类型 | 目录 |
+|--------|------|
+| 流程图 | `styles/flowchart/` |
+| 用例图 | `styles/usecase/` |
+| 泳道图（跨职能流程图） | `styles/swimlane/` |
+| 技术路线图 | `styles/tech-roadmap/` |
+| ER 图（实体关系图） | `styles/er/` |
+| 功能模块图 | `styles/functional-module/` |
+
+> 用户未指定样式时，直接进对应 `styles/<type>/` 目录，按 `guide.md` 指引取 `style.md` 示例与配色照画（或调引擎）。
+
 ## 输出要求
-**只输出 XML 代码**，不要包含任何说明文字、Markdown 格式或代码块标记。输出应该以 `<mxfile>` 开头，以 `</mxfile>` 结尾，可以直接保存为 `.drawio` 文件使用。
----
-## 语言要求
-除非用户特别要求，否则所有标签、属性名、关系名、实体名等一律使用中文。
----
+
+- **只输出 XML 代码**，以 `<mxfile>` 开头，以 `</mxfile>` 结尾，可直接保存为 `.drawio` 文件使用。
+- 所有标签、属性名、实体名、关系名等一律用中文（除非用户特别要求）。
+- 严格遵守 `drawio.md` 的文件结构与关键约束（含 `id="0"`/`id="1"`、顶点 `vertex="1"`、边 `edge="1"`、样式分号分隔等）。
+
+## 验证清单（生成后自查）
+
+- [ ] XML 格式正确，标签闭合
+- [ ] 包含 `id="0"` 与 `id="1"` 结构元素
+- [ ] 所有 ID 唯一，所有 `source`/`target` 引用的 ID 存在
+- [ ] 顶点有 `vertex="1"`，边有 `edge="1"`，二者互斥
+- [ ] 顶点有 `x,y,width,height` 的 `mxGeometry`；边有 `relative="1"` 的 `mxGeometry`
+- [ ] 非矩形形状设置了对应 `perimeter`
+- [ ] HTML 内容已正确转义
