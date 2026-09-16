@@ -1,15 +1,26 @@
 # ER 图（实体关系图，er）
 
-本目录提供「ER 图」的 draw.io 生成支持，有两种方式。
+本目录提供「ER 图」的 draw.io 生成支持，有**两种版式**和**两种生成方式**。
+
+## 版式选择（先决定这个）
+
+| 版式 | 文件 | 什么时候用 |
+|------|------|-----------|
+| **合并式**（实体 + 属性 + 联系画在同一张图） | `style.md` | 实体 ≤ 5 个；图小、一眼看全 |
+| **分离式**（总 E-R 图 + 每个实体一张属性图） | `style_separated.md` | **实体 ≥ 6 个**；毕业论文常用，正文里总图之后逐个实体配属性图 |
+
+> 用户只说"画个 E-R 图"时：先数实体个数再选；论文场景默认倾向分离式。
 
 ## 目录内容
 
-- `er_engine.py` —— 程序化生成引擎（力导向自动布局，Chen 风格：矩形实体 + 椭圆属性 + 菱形关系 + 基数标注）。
+- `er_engine.py` —— 程序化生成引擎（力导向自动布局，Chen 风格，**合并式**）。
 - `engine.md` —— 引擎的 JSON DSL 格式与调用方式（**推荐**优先用）。
-- `style.md` —— 手写兜底样式规范与示例（用户明确要求手写，或引擎不适用时读）。
+- `style.md` —— 合并式手写兜底样式规范与示例。
+- `style_separated.md` —— 分离式样式规范（布局公式 + 已验证 XML 模板 + 实体属性图扇形排布算法）。
 
 ## 怎么用
 
-- **推荐**：准备 `input.json`，运行 `python styles/er/er_engine.py input.json output.drawio`（格式详见 `engine.md`）。
-- 兜底：读 `style.md` 手写。
-- 无论哪种方式，都遵守通用层 `drawio.md` / `prompt.md` 的格式与输出要求（只输出 XML）。
+1. **合并式**：准备 `input.json`，运行 `python styles/er/er_engine.py input.json output.drawio`（格式详见 `engine.md`）。
+2. **分离式**：读 `style_separated.md`，按布局公式算坐标后手写 XML
+   （实体多时自动布局容易交叉，手写更可控）。
+3. 无论哪种方式，都遵守通用层 `drawio.md` / `prompt.md` 的格式与输出要求（只输出 XML）。

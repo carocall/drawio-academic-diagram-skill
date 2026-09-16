@@ -1,6 +1,6 @@
 ---
 name: drawio-diagram
-description: 根据用户需求生成符合draw.io格式的XML图表文件。支持流程图、用例图、泳道图、技术路线图、ER图、功能模块图等类型，提供手写提示词与JSON-to-drawio程序化引擎。
+description: 根据用户需求生成符合draw.io格式的XML图表文件。支持流程图、用例图、泳道图、技术路线图、ER图（合并式/分离式两种版式）、时序图、功能模块图等类型，提供手写提示词与JSON-to-drawio程序化引擎。
 ---
 
 # drawio-diagram Skill
@@ -25,10 +25,18 @@ description: 根据用户需求生成符合draw.io格式的XML图表文件。支
 | 用例图 | `styles/usecase/` |
 | 泳道图（跨职能流程图） | `styles/swimlane/` |
 | 技术路线图 | `styles/tech-roadmap/` |
-| ER 图（实体关系图） | `styles/er/` |
+| ER 图（实体关系图） | `styles/er/`（**两种版式**，见下） |
+| 时序图（序列图） | `styles/sequence/` |
 | 功能模块图 | `styles/functional-module/` |
 
 > 用户未指定样式时，直接进对应 `styles/<type>/` 目录，按 `guide.md` 指引取 `style.md` 示例与配色照画（或调引擎）。
+
+### ER 图有两种版式，进 `styles/er/` 后按 `guide.md` 先选版式
+
+| 版式 | 文件 | 何时用 |
+|------|------|--------|
+| 合并式（实体+属性+联系同一张图） | `style.md` / 引擎 `er_engine.py` | 实体 ≤ 5 个 |
+| **分离式**（总 E-R 图 + 每个实体一张属性图） | `style_separated.md` | **实体 ≥ 6 个**，毕业论文常用 |
 
 ## 输出要求
 
@@ -41,6 +49,8 @@ description: 根据用户需求生成符合draw.io格式的XML图表文件。支
 - [ ] XML 格式正确，标签闭合
 - [ ] 包含 `id="0"` 与 `id="1"` 结构元素
 - [ ] 所有 ID 唯一，所有 `source`/`target` 引用的 ID 存在
+  - 高频坑：一个元素由**两个 cell** 组成时（时序图的"火柴人 + 标签框"）必须分别编号
+    （如 `P0_a` 与 `P0`），重名会让 draw.io 报 `Duplicate ID` 且拒绝打开
 - [ ] 顶点有 `vertex="1"`，边有 `edge="1"`，二者互斥
 - [ ] 顶点有 `x,y,width,height` 的 `mxGeometry`；边有 `relative="1"` 的 `mxGeometry`
 - [ ] 非矩形形状设置了对应 `perimeter`
