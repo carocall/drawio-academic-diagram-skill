@@ -6,6 +6,7 @@ description: 根据用户需求生成符合draw.io格式的XML图表文件。支
 # drawio-diagram Skill
 
 生成符合 draw.io (diagrams.net) 格式的 XML 图表文件，可直接保存为 `.drawio` 打开编辑。
+并且阅读`D:\Project\我的skill\drawio-diagram\drawio-export-png.md`，在本机有安装drawio的情况下，生成后可直接用 draw.io Desktop 导出 PNG,如果本机没有drawio的话，交付xml就好。
 
 ## 通用层（任何图都先读）
 
